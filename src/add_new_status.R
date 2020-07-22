@@ -32,9 +32,4 @@ for (i in 1:nrow(df)){
 # При проблемах с совместимостью кодировок выполнять так
 install.packages("writexl")
 library(writexl)
-write_xlsx(df,"Students_ISHITR_Classified.xlsx")
-
-# Если только на Linux выполняем
-#write.csv(df,"Students_09_03_01.csv", row.names = TRUE)
-
-
+write_xlsx(df,"Classified_Students.xlsx")

@@ -1,14 +1,5 @@
-library(readr)
-df <- read_csv("Students_without_dup.csv")
-df <- df[,2:9]
-#View(df)
-
-# Странный студент
-for (i in 1:length(df$Студент)) {
-  if (df$Студент[i] == '5A4C326845782B4E4E457769393147565438345349513D3D') {
-    df <- df[-c(i), ]
-  }
-}
+library(readxl)
+df <- read_excel("Students_without_dup.xlsx")
 
 # Изменить оценки на число
 for (i in 1:nrow(df)){
@@ -35,40 +26,37 @@ for (i in 1:nrow(df)){
   )
 }
 
+# Объединяем столбцы семестр и дисциплина
 uniqueDf <- unique(df[c("Семестр", "Дисциплина")])
 uniqueDf[c("Уникальная дисциплина")] <- paste(uniqueDf$Семестр, uniqueDf$Дисциплина)
 uniqueDf <- uniqueDf[order(uniqueDf$Семестр),]
 print(uniqueDf)
 
+# Создаем транспонентную таблицу с дисциплинами в качестве столбцов
 dfT<-data.frame(matrix(vector(),ncol=nrow(uniqueDf) + 4))
 colnames(dfT) <- c("Статус", "Студент", "Группа", "Год поступления", uniqueDf[["Уникальная дисциплина"]])
 print(dfT)
 
-
+# Заполняем строки транспонентной таблицы
 uniqueStudents <- unique(df$Студент)
-
-for (i in  1:length(uniqueStudents)) {
+for (i in 1:length(uniqueStudents)) {
+  print(i)
   dfT[nrow(dfT)+1,] <- 0
-  for (j in  1:length(df$Студент)) {
+  for (j in 1:length(df$Студент)) {
     if (uniqueStudents[i] == df$Студент[j]){
-      dfT$Статус[i]<- df$Статус2[j]
+      dfT$Статус[i]<- df$Статус[j]
       dfT$Студент[i] <- df$Студент[j]
       dfT$Группа[i] <- df$Группа[j]
       dfT[["Год поступления"]][i] <- strtrim(df[["Учебный год"]][j], 4)
-
+      
       for (k in 1:length(uniqueDf[["Уникальная дисциплина"]])) {
         if (uniqueDf[["Уникальная дисциплина"]][k] == paste(df$Семестр[j], df$Дисциплина[j])) {
           dfT[c(uniqueDf[["Уникальная дисциплина"]][k])][i,] <- df$Оценка[j]
         }
       }
-      
     }
   }
 }
 
-
-
-
-#print(dfT[c("Год_поступления")][24,])
-write.csv(dfT,"StudentTrain_4sem.csv", row.names = FALSE)
-
+library(writexl)
+write_xlsx(df,"StudentsTrain_4sem.xlsx")

@@ -1,10 +1,18 @@
 library(readxl)
-df <- read_excel("Students_09_03_01.xlsx", 
-                           sheet = "Лист4")
-View(df)
+df <- read_excel("Classified_Students.xlsx")
+
+# Отобрать строки с 1 по 4 семестр
+selectedStudents <- data.frame()
+for (i in 1:nrow(df)){
+  if (df$Семестр[i] <= 4) {
+    selectedStudents <- rbind(selectedStudents, df[i,])
+  }
+}
 
 #Удалить дубликаты
-dfaggr <- aggregate(df, by=list(df$Студент, df$Семестр, df$Дисциплина), function(x) max(x)) 
-dffinal <- dfaggr[,4:11]
+dfaggr <- aggregate(selectedStudents, by=list(selectedStudents$Студент, selectedStudents$Семестр, selectedStudents$Дисциплина), function(x) max(x))
+dffinal <- dfaggr[,4:13]
 
-write.csv(dffinal,"Students_without_dup.csv", row.names = TRUE)
+# При проблемах с совместимостью кодировок выполнять так
+library(writexl)
+write_xlsx(dffinal,"Students_without_dup.xlsx")
