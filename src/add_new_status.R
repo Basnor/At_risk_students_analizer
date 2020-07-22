@@ -1,5 +1,5 @@
 library(readxl)
-df <- read_excel("Students.xlsx")
+df <- read_excel("data/Student.xlsx")
 
 # Добавляем статус выпускник всем, кто доучился до 8 семестра
 for (i in 1:nrow(df)){
@@ -17,7 +17,6 @@ maxNum <- sort(countStudent$count, decreasing = TRUE)[1]
 
 # Заменяем статус на 'Выпускник' для всех id выпускника
 for (i in 1:nrow(df)){
-  print(i)
   if (df$Статус[i] == "Выпускник" & df$Семестр[i] == 8) {
     id <- df$Студент[i]
     
@@ -32,4 +31,4 @@ for (i in 1:nrow(df)){
 # При проблемах с совместимостью кодировок выполнять так
 install.packages("writexl")
 library(writexl)
-write_xlsx(df,"Classified_Students.xlsx")
+write_xlsx(df,"data/Classified_Students.xlsx")

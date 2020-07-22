@@ -1,5 +1,5 @@
 library(readxl)
-df <- read_excel("Classified_Students.xlsx")
+df <- read_excel("data/Classified_Students.xlsx")
 
 # Отобрать строки с 1 по 4 семестр
 selectedStudents <- data.frame()
@@ -15,4 +15,4 @@ dffinal <- dfaggr[,4:13]
 
 # При проблемах с совместимостью кодировок выполнять так
 library(writexl)
-write_xlsx(dffinal,"Students_without_dup.xlsx")
+write_xlsx(dffinal,"data/Students_without_dup.xlsx")

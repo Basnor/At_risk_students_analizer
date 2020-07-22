@@ -1,5 +1,5 @@
 library(readxl)
-df <- read_excel("Students_without_dup.xlsx")
+df <- read_excel("data/Students_without_dup.xlsx")
 
 # Изменить оценки на число
 for (i in 1:nrow(df)){
@@ -30,7 +30,7 @@ for (i in 1:nrow(df)){
 uniqueDf <- unique(df[c("Семестр", "Дисциплина")])
 uniqueDf[c("Уникальная дисциплина")] <- paste(uniqueDf$Семестр, uniqueDf$Дисциплина)
 uniqueDf <- uniqueDf[order(uniqueDf$Семестр),]
-print(uniqueDf)
+#print(uniqueDf)
 
 # Создаем транспонентную таблицу с дисциплинами в качестве столбцов
 dfT<-data.frame(matrix(vector(),ncol=nrow(uniqueDf) + 4))
@@ -59,4 +59,4 @@ for (i in 1:length(uniqueStudents)) {
 }
 
 library(writexl)
-write_xlsx(dfT,"StudentsTrain_4sem.xlsx")
+write_xlsx(dfT,"data/StudentsTrain_4sem.xlsx")

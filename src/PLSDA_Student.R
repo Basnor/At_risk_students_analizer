@@ -109,3 +109,4 @@ plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Centroids distance",
           legend = TRUE, background =
           background.predict(StudTest.plsda, comp.predicted=2, dist = "centroids.dist"))
+
