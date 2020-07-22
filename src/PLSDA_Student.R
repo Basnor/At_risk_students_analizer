@@ -6,106 +6,104 @@ library(mixOmics)
 
 ## ----ЧТЕНИЕ-ОБУЧАЮЩЕЙ-ВЫБОРКИ--------------------------------------------
 library(readr)
-PeopleTrain <- read_csv("StudentTrain_4sem.csv")
+StudentTrain <- read_csv("data/StudentTrain_4sem.csv")
 #View(df)
+
+# Рандомное разделение на тестовые и обучающие индексы
+StudTrain_index <- sample(1:nrow(StudentTrain), 0.8 * nrow(StudentTrain))
+StudTest_index <- setdiff(1:nrow(StudentTrain), StudTrain_index)
 
 #список с компонентами class и data
 # 29 - 2 семестр
 # 57 - 4 семестр
-PeopTrain <- list(class = PeopleTrain$Class, data = PeopleTrain[,c(2:57)])
-rm(PeopleTrain)
+StudTrain <- list(class = StudentTrain$Статус[StudTrain_index], data = StudentTrain[StudTrain_index,c(5:61)])
 
-X = PeopTrain$data
-Y = PeopTrain$class 
+X = StudTrain$data
+Y = StudTrain$class
 #dim(X) - размерность таблицы
 
 ## ----МЕТОД-ГЛАВНЫХ-КОМПОНЕНТ---------------------------------------------
-pca.PeopTrain = pca(X, ncomp = 6, center = FALSE, scale = FALSE)
+pca.StudTrain = pca(X, ncomp = 6, center = FALSE, scale = FALSE)
 #Вклад компонент (достаточно 4 шт.) - PC1 и PC2 дают наибольший вклад
-plot(pca.PeopTrain)
+plot(pca.StudTrain)
 
 #Берем 1-2 компоненту
-plotIndiv(pca.PeopTrain, comp = 1:2,
+plotIndiv(pca.StudTrain, comp = 1:2,
           group = Y, ind.names = FALSE, 
           ellipse = FALSE, legend = TRUE, title = 'PCA on PeopleData PC1 PC2')
-show(pca.PeopTrain$x)
+show(pca.StudTrain$x)
 #Следующие копмоненты
-#plotIndiv(pca.PeopTrain, comp = 5:6,
+#plotIndiv(pca.StudTrain, comp = 5:6,
 #          group = Y, ind.names = FALSE, 
 #          ellipse = FALSE, legend = TRUE, title = 'PCA on PeopleData PC5 PC6')
-rm(pca.PeopTrain)
+rm(pca.StudTrain)
 
 ## -----МЕТОД-PLS-ДИСКРИМИНАЦИИ------------------------------------------
-PeopTrain.plsda <- plsda(X, Y, ncomp = 4)
-plotIndiv(PeopTrain.plsda , comp = 1:2,
+StudTrain.plsda <- plsda(X, Y, ncomp = 4)
+plotIndiv(StudTrain.plsda , comp = 1:2,
           group = Y, ind.names = FALSE, 
           ellipse = TRUE, legend = TRUE, title = 'PLSDA on PeopleData')
 
-plotIndiv(PeopTrain.plsda, comp = 1:2,
+plotIndiv(StudTrain.plsda, comp = 1:2,
           group = Y, ind.names = FALSE, title = "Maximum distance", legend = TRUE, 
-          background = background.predict(PeopTrain.plsda, comp.predicted=2, dist = "max.dist"))
+          background = background.predict(StudTrain.plsda, comp.predicted=2, dist = "max.dist"))
 
 ## -----КЛАССИФИКАЦИОННЫЕ-ХАРАКТЕРИСТИКИ-МОДЕЛИ-PLS----------------------
 #folds - кратность проверочных значений
 #auc - считать площадь под кривой
 #nrepeat - количество тестовых прогонов для определения ошибки
-perf.plsda.PeopTrain <- perf(PeopTrain.plsda, folds = 5, 
+perf.plsda.StudTrain <- perf(StudTrain.plsda, folds = 5, 
                              auc = TRUE, nrepeat = 10) 
-plot(perf.plsda.PeopTrain, col = color.mixo(5:7), sd = TRUE, legend.position = "horizontal")
-show(perf.plsda.PeopTrain$auc)
+plot(perf.plsda.StudTrain, col = color.mixo(5:7), sd = TRUE, legend.position = "horizontal")
+show(perf.plsda.StudTrain$auc)
 
 #roc.comp - компонент, который будет отображаться
-auc.plsda = auroc(PeopTrain.plsda, roc.comp = 1)
+auc.plsda = auroc(StudTrain.plsda, roc.comp = 1)
 
-rm(perf.plsda.PeopTrain)
+rm(perf.plsda.StudTrain)
 rm(auc.plsda)
 
 ## -----ЧТЕНИЕ-ВЫБОРКИ-ДЛЯ-ТЕСТИРОВАНИЯ----------------------------------
-library(readr)
-PeopleTest <- read_csv("StudentTrain_2sem.csv")
-
-
 #список с компонентами data и class
-PeopTest <- list(data = PeopleTest[,c(2:27)], class = PeopleTest$Class)
-#rm(PeopleTest)
+StudTest <- list(class = StudentTrain$Статус[StudTest_index], data = StudentTrain[StudTest_index,c(5:61)])
 
 ## -----ПРЕДСКАЗАНИЕ-НА-ОСНОВЕ-PLSDA-------------------------------------
-PeopTest.predict <- predict(PeopTrain.plsda, PeopTest$data, dist = "max.dist")
-Prediction <- PeopTest.predict$class$max.dist[, 2]
+StudTest.predict <- predict(StudTrain.plsda, StudTest$data, dist = "max.dist")
+Prediction <- StudTest.predict$class$max.dist[, 2]
 
-cbind(PeopleTest$Class, Prediction)
+cbind(StudTest$class, Prediction)
 
 err <- 0
-for (i in 1:length(PeopleTest$Class)) {
-  if(PeopleTest$Class[i] != Prediction[i]){
+for (i in 1:length(StudTest$class)) {
+  if(StudTest$class[i] != Prediction[i]){
     err <- err + 1;
   }
 }
 
 show(err)
 
-PeopTest.plsda <- plsda(PeopTest$data, Prediction, ncomp = 4)
+StudTest.plsda <- plsda(StudTest$data, Prediction, ncomp = 4)
 
-plotIndiv(PeopTest.plsda , comp = 1:2,
+plotIndiv(StudTest.plsda , comp = 1:2,
           group = Prediction, ind.names = FALSE, 
-          ellipse = TRUE, legend = TRUE, title = 'PLSDA on PeopleTest PC1 PC2')
+          ellipse = TRUE, legend = TRUE, title = 'PLSDA on StudentTest PC1 PC2')
 
-#plotIndiv(PeopTest.plsda , comp = 3:4,
+#plotIndiv(StudTest.plsda , comp = 3:4,
 #          group = Prediction, ind.names = FALSE, 
-#          ellipse = TRUE, legend = TRUE, title = 'PLSDA on PeopleTest PC3 PC4')
+#          ellipse = TRUE, legend = TRUE, title = 'PLSDA on StudentTest PC3 PC4')
 
-plotIndiv(PeopTest.plsda, comp = 1:2,
+plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Max distance",
           legend = TRUE, background = 
-            background.predict(PeopTest.plsda, comp.predicted=2, dist = "max.dist"))
+            background.predict(StudTest.plsda, comp.predicted=2, dist = "max.dist"))
 
-plotIndiv(PeopTest.plsda, comp = 1:2,
+plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Mahalanobis distance",
           legend = TRUE,  background = 
-            background.predict(PeopTest.plsda, comp.predicted=2, dist = "mahalanobis.dist"))
+            background.predict(StudTest.plsda, comp.predicted=2, dist = "mahalanobis.dist"))
 
-plotIndiv(PeopTest.plsda, comp = 1:2,
+plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Centroids distance",
           legend = TRUE,  background = 
-            background.predict(PeopTest.plsda, comp.predicted=2, dist = "centroids.dist"))
+            background.predict(StudTest.plsda, comp.predicted=2, dist = "centroids.dist"))
 
