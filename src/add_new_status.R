@@ -11,13 +11,17 @@ for (i in 1:nrow(df)){
 # Сортировка по Студент и Семестр
 df <- df[order(df$Студент, df$Семестр),]
 
-# Не запускать!!!! (очень долгий)
+# Ищем максимальное количество записей об 1 студенте
+countStudent <- aggregate(data.frame(count = df$Студент), list(value = df$Студент), length)
+maxNum <- sort(countStudent$count, decreasing = TRUE)[1]
+
+# Заменяем статус на 'Выпускник' для всех id выпускника
 for (i in 1:nrow(df)){
   print(i)
   if (df$Статус[i] == "Выпускник" & df$Семестр[i] == 8) {
     id <- df$Студент[i]
     
-    for (j in 1:i){
+    for (j in (i-min(i-1, maxNum)):i){
       if (df$Студент[j] == id) {
         df$Статус[j] <- "Выпускник"
       }
