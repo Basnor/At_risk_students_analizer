@@ -59,4 +59,4 @@ for (i in 1:length(uniqueStudents)) {
 }
 
 library(writexl)
-write_xlsx(df,"StudentsTrain_4sem.xlsx")
+write_xlsx(dfT,"StudentsTrain_4sem.xlsx")
