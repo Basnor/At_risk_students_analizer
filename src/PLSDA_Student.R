@@ -28,7 +28,7 @@ Y = StudTrain$class
 
 ## ----МЕТОД-ГЛАВНЫХ-КОМПОНЕНТ---------------------------------------------
 
-pca.StudTrain = pca(X, ncomp = 4, center = TRUE, scale = TRUE)
+pca.StudTrain = pca(X, ncomp = 10, center = TRUE, scale = TRUE)
 #Вклад компонент (достаточно 4 шт.) - PC1 и PC2 дают наибольший вклад
 plot(pca.StudTrain)
 
@@ -65,7 +65,7 @@ plot(perf.plsda.StudTrain, col = color.mixo(5:7), sd = TRUE, legend.position = "
 show(perf.plsda.StudTrain$auc)
 
 #roc.comp - компонент, который будет отображаться
-auc.plsda = auroc(StudTrain.plsda, roc.comp = 4)
+auc.plsda = auroc(StudTrain.plsda, roc.comp = 3)
 
 rm(perf.plsda.StudTrain)
 rm(auc.plsda)
@@ -83,20 +83,44 @@ Prediction <- StudTest.predict$class$mahalanobis.dist[, 2]
 
 cbind(StudTest$class, Prediction)
 
-err <- 0
+
+#Ошибки 1 и 2 рода
+correct_type1 <- 0
+correct_type2 <- 0
+error_type1 <- 0
+error_type2 <- 0
 for (i in 1:length(StudTest$class)) {
-  if(StudTest$class[i] != Prediction[i]){
-    err <- err + 1;
+  if(StudTest$class[i] == Prediction[i] & Prediction[i] == "Выпускник"){
+    correct_type1 <- correct_type1 + 1;
+  }
+  if(StudTest$class[i] == Prediction[i] & Prediction[i] == "Отчисленный"){
+    correct_type2 <- correct_type2 + 1;
+  }
+  if(StudTest$class[i] != Prediction[i] & StudTest$class[i] == "Выпускник"){
+    error_type1 <- error_type1 + 1;
+  }
+  if(StudTest$class[i] != Prediction[i] & StudTest$class[i] == "Отчисленный"){
+    error_type2 <- error_type2 + 1;
   }
 }
 
-show(err)
+print("Выпускник")
+show(correct_type1)
+print("Отчисленный")
+show(correct_type2)
+print("Должен быть Выпускник, но Отчисленный")
+show(error_type1)
+print("Должен быть Отчисленный, но Выпускник")
+show(error_type2)
 
-StudTest.plsda <- plsda(StudTest$data, Prediction, ncomp = 4)
+
+#Отображение графиков для тестовой выборки
+StudTest.plsda <- plsda(StudTest$data, Prediction, ncomp = 3)
 
 plotIndiv(StudTest.plsda , comp = 1:2,
           group = Prediction, ind.names = FALSE,
-          ellipse = TRUE, legend = TRUE, title = 'PLSDA on StudentTest PC1 PC2')
+          ellipse = TRUE, legend = TRUE, title = 'PLSDA on StudentTest PC1 PC2', 
+          dist = "mahalanobis.dist")
 
 #plotIndiv(StudTest.plsda , comp = 3:4,
 # group = Prediction, ind.names = FALSE,
