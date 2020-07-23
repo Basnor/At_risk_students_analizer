@@ -9,21 +9,26 @@ library(readxl)
 StudentTrain <- read_excel("data/StudentsTrain_4sem.xlsx")
 
 # Рандомное разделение на тестовые и обучающие индексы
-StudTrain_index <- sample(1:nrow(StudentTrain), 0.8 * nrow(StudentTrain))
+StudTrain_index <- sample(1:nrow(StudentTrain), 0.7 * nrow(StudentTrain))
 StudTest_index <- setdiff(1:nrow(StudentTrain), StudTrain_index)
 
 #список с компонентами class и data
 StudTrain <- list(class = StudentTrain$Статус[StudTrain_index], 
                   data = StudentTrain[StudTrain_index,c(5:ncol(StudentTrain))])
 
-print(unique(StudTrain$data))
+#print(unique(StudTrain$data))
+
+nullrow <- which(apply(StudTrain$data, 2, var) == 0)
+StudTrain$data <- StudTrain$data[-c(nullrow)]
+
 X = StudTrain$data
 X = data.matrix(X)
 Y = StudTrain$class
 #dim(X) - размерность таблицы
 
 ## ----МЕТОД-ГЛАВНЫХ-КОМПОНЕНТ---------------------------------------------
-pca.StudTrain = pca(X, ncomp = 6, center = FALSE, scale = FALSE)
+
+pca.StudTrain = pca(X, ncomp = 4, center = TRUE, scale = TRUE)
 #Вклад компонент (достаточно 4 шт.) - PC1 и PC2 дают наибольший вклад
 plot(pca.StudTrain)
 
@@ -32,6 +37,7 @@ plotIndiv(pca.StudTrain, comp = 1:2,
           group = Y, ind.names = FALSE,
           ellipse = FALSE, legend = TRUE, title = 'PCA on StudentData')
 show(pca.StudTrain$x)
+
 #Следующие копмоненты
 #plotIndiv(pca.StudTrain, comp = 5:6,
 # group = Y, ind.names = FALSE,
@@ -59,7 +65,7 @@ plot(perf.plsda.StudTrain, col = color.mixo(5:7), sd = TRUE, legend.position = "
 show(perf.plsda.StudTrain$auc)
 
 #roc.comp - компонент, который будет отображаться
-auc.plsda = auroc(StudTrain.plsda, roc.comp = 1)
+auc.plsda = auroc(StudTrain.plsda, roc.comp = 4)
 
 rm(perf.plsda.StudTrain)
 rm(auc.plsda)
@@ -67,7 +73,9 @@ rm(auc.plsda)
 ## ----ЧТЕНИЕ-ВЫБОРКИ-ДЛЯ-ТЕСТИРОВАНИЯ----------------------------------
 #список с компонентами data и class
 StudTest <- list(class = StudentTrain$Статус[StudTest_index], 
-                 data = data.matrix(StudentTrain[StudTest_index,c(5:ncol(StudentTrain))]))
+                 data = StudentTrain[StudTest_index,c(5:ncol(StudentTrain))])
+StudTest$data <- StudTest$data[-c(nullrow)]
+StudTest$data <- data.matrix(StudTest$data)
 
 ## —---ПРЕДСКАЗАНИЕ-НА-ОСНОВЕ-PLSDA-----------------------------------—
 StudTest.predict <- predict(StudTrain.plsda, StudTest$data, dist = "mahalanobis.dist")
@@ -97,16 +105,15 @@ plotIndiv(StudTest.plsda , comp = 1:2,
 plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Max distance",
           legend = TRUE, background = 
-          background.predict(StudTest.plsda, comp.predicted=2, dist = "max.dist"))
+            background.predict(StudTest.plsda, comp.predicted=2, dist = "max.dist"))
 
 plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Mahalanobis distance",
           legend = TRUE, background = 
-          background.predict(StudTest.plsda,
-                             comp.predicted=2, dist = "mahalanobis.dist"))
+            background.predict(StudTest.plsda,
+                               comp.predicted=2, dist = "mahalanobis.dist"))
 
 plotIndiv(StudTest.plsda, comp = 1:2,
           group = Prediction, ind.names = TRUE, title = "Centroids distance",
           legend = TRUE, background =
-          background.predict(StudTest.plsda, comp.predicted=2, dist = "centroids.dist"))
-
+            background.predict(StudTest.plsda, comp.predicted=2, dist = "centroids.dist"))
