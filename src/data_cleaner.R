@@ -29,7 +29,7 @@ rm(iddel)
 N <- 5
 for (i in 1:nrow(df)){
   if (df$Семестр[i] == N){
-    df$Статус[i] <- "Не отчислен"
+    df$Статус[i] <- "Не отчисленный"
   }
 }
 rm(i)
@@ -42,12 +42,12 @@ maxNum <- sort(countStudent$count, decreasing = TRUE)[1]
 
 # Заменяем статус на 'Выпускник' для всех id выпускника
 for (i in 1:nrow(df)){
-  if (df$Статус[i] == "Не отчислен" & df$Семестр[i] == N) {
+  if (df$Статус[i] == "Не отчисленный" & df$Семестр[i] == N) {
     id <- df$Студент[i]
     
     for (j in (i-min(i-1, maxNum)):i){
       if (df$Студент[j] == id) {
-        df$Статус[j] <- "Не отчислен"
+        df$Статус[j] <- "Не отчисленный"
       }
     }
   }
@@ -98,5 +98,5 @@ print(min(selectedStudents$Год))
 Отчисленный <- nrow(selectedStudents[selectedStudents$Статус == 'Отчисленный',])
 print(Отчисленный)
 
-Выпускник <- nrow(selectedStudents[selectedStudents$Статус == 'Не отчислен',])
+Выпускник <- nrow(selectedStudents[selectedStudents$Статус == 'Не отчисленный',])
 print(Выпускник)

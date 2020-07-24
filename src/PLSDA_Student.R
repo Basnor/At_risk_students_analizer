@@ -46,7 +46,7 @@ print(pca.StudTrain)
 rm(pca.StudTrain)
 
 ## ----МЕТОД-PLS-ДИСКРИМИНАЦИИ------------------------------------------
-StudTrain.plsda <- plsda(X, Y, ncomp = 4)
+StudTrain.plsda <- plsda(X, Y, ncomp = 10)
 plotIndiv(StudTrain.plsda , comp = 1:2,
           group = Y, ind.names = FALSE,
           ellipse = TRUE, legend = TRUE, title = 'PLSDA on StudentData')
@@ -57,6 +57,10 @@ plotIndiv(StudTrain.plsda, comp = 1:2,
                                           dist = "mahalanobis.dist"))
 
 barplot(StudTrain.plsda$explained_variance$X, xlab="Components", ylab="Explained variance")
+
+barplot(StudTrain.plsda$explained_variance$X, xlab="Components", ylab="Explained variance")
+print(StudTrain.plsda$explained_variance$X)
+print(sum(StudTrain.plsda$explained_variance$X))
 
 ## ----КЛАССИФИКАЦИОННЫЕ-ХАРАКТЕРИСТИКИ-МОДЕЛИ-PLS----------------------
 #folds - кратность проверочных значений
@@ -93,27 +97,27 @@ correct_type2 <- 0
 error_type1 <- 0
 error_type2 <- 0
 for (i in 1:length(StudTest$class)) {
-  if(StudTest$class[i] == Prediction[i] & Prediction[i] == "Выпускник"){
+  if(StudTest$class[i] == Prediction[i] & Prediction[i] == "Не отчисленный"){
     correct_type1 <- correct_type1 + 1;
   }
   if(StudTest$class[i] == Prediction[i] & Prediction[i] == "Отчисленный"){
     correct_type2 <- correct_type2 + 1;
   }
-  if(StudTest$class[i] != Prediction[i] & StudTest$class[i] == "Выпускник"){
-    error_type1 <- error_type1 + 1;
+    if(StudTest$class[i] != Prediction[i] & StudTest$class[i] == "Не отчисленный"){
+  error_type1 <- error_type1 + 1;
   }
-  if(StudTest$class[i] != Prediction[i] & StudTest$class[i] == "Отчисленный"){
-    error_type2 <- error_type2 + 1;
+    if(StudTest$class[i] != Prediction[i] & StudTest$class[i] == "Отчисленный"){
+  error_type2 <- error_type2 + 1;
   }
 }
 
-print("Выпускник")
+print("Не отчисленный")
 show(correct_type1)
 print("Отчисленный")
 show(correct_type2)
-print("Должен быть Выпускник, но Отчисленный")
+print("Должен быть Не отчисленный, но Отчисленный")
 show(error_type1)
-print("Должен быть Отчисленный, но Выпускник")
+print("Должен быть Отчисленный, но Не отчисленный")
 show(error_type2)
 
 
