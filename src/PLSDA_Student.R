@@ -38,6 +38,7 @@ plotIndiv(pca.StudTrain, comp = 1:2,
           ellipse = FALSE, legend = TRUE, title = 'PCA on StudentData')
 show(pca.StudTrain$x)
 
+print(pca.StudTrain)
 #Следующие копмоненты
 #plotIndiv(pca.StudTrain, comp = 5:6,
 # group = Y, ind.names = FALSE,
@@ -54,6 +55,8 @@ plotIndiv(StudTrain.plsda, comp = 1:2,
           group = Y, ind.names = FALSE, title = "Mahalanobis dist", legend = TRUE,
           background = background.predict(StudTrain.plsda, comp.predicted=2, 
                                           dist = "mahalanobis.dist"))
+
+barplot(StudTrain.plsda$explained_variance$X, xlab="Components", ylab="Explained variance")
 
 ## ----КЛАССИФИКАЦИОННЫЕ-ХАРАКТЕРИСТИКИ-МОДЕЛИ-PLS----------------------
 #folds - кратность проверочных значений

@@ -24,12 +24,12 @@ rm(i)
 df <- df[!df$Студент %in% iddel, ]
 rm(iddel)
 
-## ----ДОБАВЛЯЕМ-СТАТУС-ВЫПУСКНИК-ДЛЯ-N-СЕМЕСТРА---------------------------
+## ----ДОБАВЛЯЕМ-СТАТУС-НЕ-ОТЧИСЛЕН-НА-N-СЕМЕСТР---------------------------
 # Добавляем статус выпускник всем, кто доучился до N семестра
-N <- 3
+N <- 5
 for (i in 1:nrow(df)){
   if (df$Семестр[i] == N){
-    df$Статус[i] <- "Выпускник"
+    df$Статус[i] <- "Не отчислен"
   }
 }
 rm(i)
@@ -42,12 +42,12 @@ maxNum <- sort(countStudent$count, decreasing = TRUE)[1]
 
 # Заменяем статус на 'Выпускник' для всех id выпускника
 for (i in 1:nrow(df)){
-  if (df$Статус[i] == "Выпускник" & df$Семестр[i] == N) {
+  if (df$Статус[i] == "Не отчислен" & df$Семестр[i] == N) {
     id <- df$Студент[i]
     
     for (j in (i-min(i-1, maxNum)):i){
       if (df$Студент[j] == id) {
-        df$Статус[j] <- "Выпускник"
+        df$Статус[j] <- "Не отчислен"
       }
     }
   }
@@ -77,7 +77,7 @@ for (i in 1:nrow(df)){
 # При проблемах с совместимостью кодировок выполнять так
 install.packages("writexl")
 library(writexl)
-write_xlsx(df,"data/Clean_and_Classified_Students_2.xlsx")
+write_xlsx(df,"data/Clean_and_Classified_Students_4.xlsx")
 
 ## ----ИНФОРМАЦИЯ-ДЛЯ-ТАБЛИЦЫ-------------------------------------------
 uniqueDis <- unique(selectedStudents$Студент)
@@ -98,5 +98,5 @@ print(min(selectedStudents$Год))
 Отчисленный <- nrow(selectedStudents[selectedStudents$Статус == 'Отчисленный',])
 print(Отчисленный)
 
-Выпускник <- nrow(selectedStudents[selectedStudents$Статус == 'Выпускник',])
+Выпускник <- nrow(selectedStudents[selectedStudents$Статус == 'Не отчислен',])
 print(Выпускник)

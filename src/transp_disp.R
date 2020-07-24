@@ -1,5 +1,5 @@
 library(readxl)
-df <- read_excel("data/Clean_and_Classified_Students_2.xlsx")
+df <- read_excel("data/Clean_and_Classified_Students_4.xlsx")
 
 # Изменить оценки на число
 for (i in 1:nrow(df)){
