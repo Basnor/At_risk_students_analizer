@@ -1,8 +1,9 @@
 # Test people
-Net
 
+![neuralnet](https://github.com/Basnor/At_risk_students_analizer/blob/master/test_people/plot)
 
-***Confusion Matrix and Statistics***
+```sh
+Confusion Matrix and Statistics
 
           Reference
 Prediction FN FS MN MS
@@ -33,3 +34,4 @@ Prevalence             0.25000   0.21875    0.2500   0.28125
 Detection Rate         0.09375   0.03125    0.0000   0.03125
 Detection Prevalence   0.37500   0.18750    0.2188   0.21875
 Balanced Accuracy      0.50000   0.47143    0.3542   0.42512
+```
