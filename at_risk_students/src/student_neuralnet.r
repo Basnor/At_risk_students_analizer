@@ -42,8 +42,13 @@ require(neuralnet)
 
 softplus <- function(x) { log(1 + exp(x)) }
 #summary(data.frame(X_train,Y_train))
+
+# ---------softmax--------------------------------------------------
+#students_model <- neuralnet(Y_train ~ ., data = data.frame(X_train,Y_train), 
+#                          hidden = c(55,15), act.fct = softplus, rep = 1, linear.output=TRUE, stepmax=1e7)
+# ---------tanh--------------------------------------------------
 students_model <- neuralnet(Y_train ~ ., data = data.frame(X_train,Y_train), 
-                          hidden = c(80,25), act.fct = softplus, rep = 1, linear.output=TRUE, stepmax=1e7)
+                            hidden = c(90,15), act.fct = "tanh", rep = 1, linear.output=TRUE, stepmax=1e7)
 #plot(students_model)
 
 
